@@ -1,49 +1,54 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parser: "babel-eslint",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
-      legacyDecorators: true
-    }
+      legacyDecorators: true,
+    },
   },
-  extends: 'eslint:recommended',
+  extends: "eslint:recommended",
   env: {
     browser: true,
     node: true,
-    mocha: true
+    mocha: true,
   },
   rules: {},
   overrides: [
     // node files
     {
       files: [
-        '.eslintrc.js',
-        '.template-lintrc.js',
-        'ember-cli-build.js',
-        'index.js',
-        'testem.js',
-        'blueprints/*/index.js',
-        'config/**/*.js',
-        'tests/dummy/config/**/*.js',
-        'node-tests/**/*.js'
+        ".eslintrc.js",
+        ".template-lintrc.js",
+        "ember-cli-build.js",
+        "index.js",
+        "testem.js",
+        "blueprints/*/index.js",
+        "config/**/*.js",
+        "tests/dummy/config/**/*.js",
+        "node-tests/**/*.js",
       ],
       excludedFiles: [
-        'addon/**',
-        'addon-test-support/**',
-        'app/**',
-        'tests/dummy/app/**'
+        "addon/**",
+        "addon-test-support/**",
+        "app/**",
+        "tests/dummy/app/**",
       ],
       parserOptions: {
-        sourceType: 'script'
+        sourceType: "script",
       },
       env: {
         browser: false,
-        node: true
+        node: true,
       },
-      plugins: ['node'],
-      extends: ['plugin:node/recommended', 'plugin:jest/recommended']
-    }
-  ]
+      plugins: ["node"],
+      extends: ["plugin:node/recommended"],
+    },
+    {
+      // test files
+      files: ["tests/**/*-test.{js,ts}"],
+      extends: ["plugin:jest/recommended"],
+    },
+  ],
 };

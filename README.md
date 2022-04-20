@@ -2,12 +2,11 @@
 
 > 📒 Ember storybook adapter
 
-
 # Compatibility
 
-* Ember.js v3.16 or above
-* Ember CLI v2.13 or above
-* Node.js v16 or above
+- Ember.js v3.24 or above
+- Ember CLI v3.24 or above
+- Node.js v12 or above
 
 # Installation
 
@@ -39,25 +38,33 @@ This will be triggered automatically as a post build action when running `ember 
 
 ## Config
 
-The config object represents anything that could be parsed from an `index.html` file. This must be in the format as below: 
+The config object represents anything that could be parsed from an `index.html` file. This must be in the format as below:
 
 ```json
 {
-  "meta": [{
-    "attributes": ["name", "content"]
-  }, {
-    "attributes": ["name", "content"]
-  }, {
-    "attributes": ["name", "content", "id"]
-  }],
-  "link": [{
-    "selector": "link",
-    "attributes": ["rel", "href"]
-  }],
-  "script": [{
-    "selector": "script",
-    "attributes": ["src"]
-  }]
+  "meta": [
+    {
+      "attributes": ["name", "content"]
+    },
+    {
+      "attributes": ["name", "content"]
+    },
+    {
+      "attributes": ["name", "content", "id"]
+    }
+  ],
+  "link": [
+    {
+      "selector": "link",
+      "attributes": ["rel", "href"]
+    }
+  ],
+  "script": [
+    {
+      "selector": "script",
+      "attributes": ["src"]
+    }
+  ]
 }
 ```
 
@@ -65,7 +72,7 @@ So in order to add a script tag to the generated `preview-head.html` a potential
 
 ```json
 "storybook": {
-  "config": { 
+  "config": {
     "script": {
       "src": "./assets/foo.js"
     }
@@ -73,7 +80,8 @@ So in order to add a script tag to the generated `preview-head.html` a potential
 }
 ```
 
-> It is important to note that storybook will by default serve any files out of the `public` folder. If you have custom files you would like to serve they need to exist there. 
+> It is important to note that storybook will by default serve any files out of the `public` folder. If you have custom files you would like to serve they need to exist there.
+
 # Troubleshooting
 
 ### Components that need routing for query parameters
@@ -82,20 +90,20 @@ The Storybook integration for Ember [renders stories into a custom component](ht
 
 ```javascript
 function injectRoutedController(controllerClass) {
-  return on('init', function() {
+  return on("init", function () {
     let container = getOwner(this);
-    container.register('controller:storybook', controllerClass);
+    container.register("controller:storybook", controllerClass);
 
-    let routerFactory = container.factoryFor('router:main');
-    routerFactory.class.map(function() {
-      this.route('storybook');
+    let routerFactory = container.factoryFor("router:main");
+    routerFactory.class.map(function () {
+      this.route("storybook");
     });
 
-    let router = container.lookup('router:main');
-    router.initialURL = 'storybook';
+    let router = container.lookup("router:main");
+    router.initialURL = "storybook";
     router.startRouting(true);
 
-    this.set('controller', container.lookup('controller:storybook'));
+    this.set("controller", container.lookup("controller:storybook"));
   });
 }
 ```
@@ -122,16 +130,24 @@ export let SortableColumns = () => {
     context: {
       injectRoutedController: injectRoutedController(
         Controller.extend({
-          queryParams: ['sortProperty', 'sortDescending'],
-          sortProperty: 'name',
+          queryParams: ["sortProperty", "sortDescending"],
+          sortProperty: "name",
           sortDescending: false,
         })
       ),
 
-      sortedShortList: computed('controller.sortProperty', 'controller.sortDescending', function() {
-        let sorted = productMetadata.sortBy(this.get('controller.sortProperty') || 'name');
-        return this.get('controller.sortDescending') ? sorted.reverse() : sorted;
-      }),
+      sortedShortList: computed(
+        "controller.sortProperty",
+        "controller.sortDescending",
+        function () {
+          let sorted = productMetadata.sortBy(
+            this.get("controller.sortProperty") || "name"
+          );
+          return this.get("controller.sortDescending")
+            ? sorted.reverse()
+            : sorted;
+        }
+      ),
     },
   };
 };
@@ -139,20 +155,21 @@ export let SortableColumns = () => {
 
 ### Working with store
 
-As said above, Storybook integration for Ember renders stories into a custom component, that are store-less. 
-If your component relies on an Ember model, for example, you can work around with the same way you would do for query params.  
+As said above, Storybook integration for Ember renders stories into a custom component, that are store-less.
+If your component relies on an Ember model, for example, you can work around with the same way you would do for query params.
 
 ```javascript
 function createUser() {
-  return on('init', function () {
+  return on("init", function () {
     this.user = getOwner(this)
-      .lookup('service:store')
-      .createRecord('user', { lastName: 'Doe', email: 'john.doe@qonto.eu' });
+      .lookup("service:store")
+      .createRecord("user", { lastName: "Doe", email: "john.doe@qonto.eu" });
   });
 }
 ```
 
 And then in your story:
+
 ```javascript
 export const storeExample = () => {
   return {
@@ -171,7 +188,7 @@ export const storeExample = () => {
 ### Making Ember import work
 
 Because Ember uses a mapping to resolve import like `@ember/array` or `@ember/object` for example, they may not work in Storybook.
-However, and because the module is already declared in the [babel preset for ember](https://github.com/storybookjs/storybook/blob/next/app/ember/src/server/framework-preset-babel-ember.ts#L19), you should be able to make them work by adding 
+However, and because the module is already declared in the [babel preset for ember](https://github.com/storybookjs/storybook/blob/next/app/ember/src/server/framework-preset-babel-ember.ts#L19), you should be able to make them work by adding
 [babel-plugin-ember-modules-api-polyfill](https://github.com/ember-cli/babel-plugin-ember-modules-api-polyfill) to our `package.json`.
 
 ### `preview-head` generation race condition
@@ -185,20 +202,19 @@ Since the file is auto-generated, it would be nice to add it to `.gitignore` so 
 In some situations, components don’t render properly in stories, such as when dynamically-calculated container widths are zero or contents are blank. The cause for this is as-yet unknown, but an unfortunate workaround like this utility class can help in the meantime, by delaying the insertion of the component until the container element has been fully rendered:
 
 ```javascript
-import EmberObject from '@ember/object';
-import { next } from '@ember/runloop';
+import EmberObject from "@ember/object";
+import { next } from "@ember/runloop";
 
 export default EmberObject.extend({
   init() {
     this._super(...arguments);
-    this.set('complete', false);
+    this.set("complete", false);
 
     next(this, () => {
-      this.set('complete', true);
+      this.set("complete", true);
     });
   },
 });
-
 ```
 
 Here’s an example of it being used in a story:
@@ -216,8 +232,8 @@ export let Standard = () => {
     context: {
       delayedTruth: DelayedTruth.create(),
       distributionBarData: [
-        { label: 'one', value: 10 },
-        { label: 'two', value: 20 },
+        { label: "one", value: 10 },
+        { label: "two", value: 20 },
       ],
     },
   };
@@ -226,7 +242,6 @@ export let Standard = () => {
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
-License
-------------------------------------------------------------------------------
+## License
 
 This project is licensed under the [MIT License](LICENSE.md).
